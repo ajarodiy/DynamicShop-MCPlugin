@@ -1,0 +1,13 @@
+name: DynamicShop
+version: ${project.version}
+main: me.hadzakee.dynamicshop.DynamicShop
+api-version: 1.16
+authors: [ HadZakee ]
+depend:
+  - Vault
+commands:
+  shop:
+    description: Open shop
+  ashop:
+    description: Edit shop (Admins only)
+
