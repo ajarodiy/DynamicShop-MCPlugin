@@ -1,5 +1,6 @@
 package me.hadzakee.dynamicshop.commands;
 
+import me.hadzakee.dynamicshop.DynamicShop;
 import me.hadzakee.dynamicshop.menu.MenuManager;
 import me.hadzakee.dynamicshop.menu.MenuManagerException;
 import me.hadzakee.dynamicshop.menu.MenuManagerNotSetupException;
@@ -21,7 +22,7 @@ public class OpenAdminShop implements CommandExecutor {
 
         Player player = (Player) sender;
 
-        if (!player.hasPermission("change.this")) {
+        if (!player.hasPermission("dynamicshop.ashop")) {
             player.sendMessage(MessageUtils.message("You don't have the required permissions."));
             return true;
         }
