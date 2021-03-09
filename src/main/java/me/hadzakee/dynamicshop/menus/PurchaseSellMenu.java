@@ -4,10 +4,11 @@ import me.hadzakee.dynamicshop.Database;
 import me.hadzakee.dynamicshop.DynamicShop;
 import me.hadzakee.dynamicshop.menu.*;
 import me.hadzakee.dynamicshop.utils.MessageUtils;
-import me.kodysimpson.simpapi.colors.ColorTranslator;
+import me.hadzakee.dynamicshop.utils.ColorTranslator;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -19,11 +20,13 @@ public class PurchaseSellMenu extends Menu {
 
     private PlayerMenuUtility pmu;
     private Economy economy;
+    private FileConfiguration config;
 
     public PurchaseSellMenu(AbstractPlayerMenuUtility pmu) {
         super(pmu);
         this.pmu = (PlayerMenuUtility) pmu;
         this.economy = DynamicShop.getEconomy();
+        this.config = DynamicShop.getInstance().getConfig();
     }
 
     @Override
@@ -63,8 +66,8 @@ public class PurchaseSellMenu extends Menu {
         else if (lore.contains("stack")) amount = 64;
         else return;
 
-        if (lore.contains("Buy")) buy(amount, amount * pmu.getShopItem().getCurrentPrice());
-        else sell(amount, amount * pmu.getShopItem().getCurrentPrice());
+        if (lore.contains("Buy")) buy(amount, amount * pmu.getShopItem().getCurrentBuyPrice());
+        else sell(amount, amount * pmu.getShopItem().getCurrentSellPrice());
     }
 
     @Override
@@ -73,23 +76,24 @@ public class PurchaseSellMenu extends Menu {
         Material material = pmu.getItem().getType();
 
         ItemStack main = makeItem(material, ColorTranslator.translateColorCodes("&8&l" + pmu.parseItemName(material.name())),
-                ColorTranslator.translateColorCodes(" &#24e331➯ &#2ff53c&lPrice: &#2ca5f5$" + pmu.getShopItem().getCurrentPrice()),
+                ColorTranslator.translateColorCodes(" &#24e331➯ &#2ff53c&lSell Price: &#2ca5f5$" + pmu.getShopItem().getCurrentSellPrice()),
+                ColorTranslator.translateColorCodes(" &#24e331➯ &#2ff53c&lBuy  Price: &#2ca5f5$" + pmu.getShopItem().getCurrentBuyPrice()), "",
                 ColorTranslator.translateColorCodes(" &#24e331➯ &#2ff53c&lStock: &#2ca5f5" + pmu.getShopItem().getStock()));
 
 
         ItemStack sellOne = makeItem(material, 1, ColorTranslator.translateColorCodes("&8&l" + pmu.parseItemName(material.name())),
-                ColorTranslator.translateColorCodes("&#035efcSell one"), ColorTranslator.translateColorCodes(" &#24e331➯ &#2ff53c&lPrice: &#2ca5f5$" + pmu.getShopItem().getCurrentPrice()*1));
+                ColorTranslator.translateColorCodes("&#035efcSell one"), ColorTranslator.translateColorCodes(" &#24e331➯ &#2ff53c&lPrice: &#2ca5f5$" + pmu.getShopItem().getCurrentSellPrice()));
         ItemStack sellTen = makeItem(material, 10, ColorTranslator.translateColorCodes("&8&l" + pmu.parseItemName(material.name())),
-                ColorTranslator.translateColorCodes("&#035efcSell ten"), ColorTranslator.translateColorCodes(" &#24e331➯ &#2ff53c&lPrice: &#2ca5f5$" + pmu.getShopItem().getCurrentPrice()*10));
+                ColorTranslator.translateColorCodes("&#035efcSell ten"), ColorTranslator.translateColorCodes(" &#24e331➯ &#2ff53c&lPrice: &#2ca5f5$" + pmu.getShopItem().getCurrentSellPrice()*10));
         ItemStack sellStack = makeItem(material, 64, ColorTranslator.translateColorCodes("&8&l" + pmu.parseItemName(material.name())),
-                ColorTranslator.translateColorCodes("&#035efcSell a stack"), ColorTranslator.translateColorCodes(" &#24e331➯ &#2ff53c&lPrice: &#2ca5f5$" + pmu.getShopItem().getCurrentPrice()*64));
+                ColorTranslator.translateColorCodes("&#035efcSell a stack"), ColorTranslator.translateColorCodes(" &#24e331➯ &#2ff53c&lPrice: &#2ca5f5$" + pmu.getShopItem().getCurrentSellPrice()*64));
 
         ItemStack buyOne = makeItem(material, 1, ColorTranslator.translateColorCodes("&8&l" + pmu.parseItemName(material.name())),
-                ColorTranslator.translateColorCodes("&#035efcBuy one"), ColorTranslator.translateColorCodes(" &#24e331➯ &#2ff53c&lPrice: &#2ca5f5$" + pmu.getShopItem().getCurrentPrice()*1));
+                ColorTranslator.translateColorCodes("&#035efcBuy one"), ColorTranslator.translateColorCodes(" &#24e331➯ &#2ff53c&lPrice: &#2ca5f5$" + pmu.getShopItem().getCurrentBuyPrice()));
         ItemStack buyTen = makeItem(material, 10, ColorTranslator.translateColorCodes("&8&l" + pmu.parseItemName(material.name())),
-                ColorTranslator.translateColorCodes("&#035efcBuy ten"), ColorTranslator.translateColorCodes(" &#24e331➯ &#2ff53c&lPrice: &#2ca5f5$" + pmu.getShopItem().getCurrentPrice()*10));
+                ColorTranslator.translateColorCodes("&#035efcBuy ten"), ColorTranslator.translateColorCodes(" &#24e331➯ &#2ff53c&lPrice: &#2ca5f5$" + pmu.getShopItem().getCurrentBuyPrice()*10));
         ItemStack buyStack = makeItem(material, 64, ColorTranslator.translateColorCodes("&8&l" + pmu.parseItemName(material.name())),
-                ColorTranslator.translateColorCodes("&#035efcBuy a stack"), ColorTranslator.translateColorCodes(" &#24e331➯ &#2ff53c&lPrice: &#2ca5f5$" + pmu.getShopItem().getCurrentPrice()*64));
+                ColorTranslator.translateColorCodes("&#035efcBuy a stack"), ColorTranslator.translateColorCodes(" &#24e331➯ &#2ff53c&lPrice: &#2ca5f5$" + pmu.getShopItem().getCurrentBuyPrice()*64));
 
         ItemStack back = makeItem(Material.BARRIER,  ColorTranslator.translateColorCodes("&#f0300e&lBack"));
 
@@ -115,14 +119,14 @@ public class PurchaseSellMenu extends Menu {
 
                 removeItems(item.getType(), amount);
                 pmu.getShopItem().setSold(pmu.getShopItem().getSold() + amount);
-                pmu.getOwner().sendMessage(MessageUtils.message("Successfully sold the items."));
+                pmu.getOwner().sendMessage(MessageUtils.message(config.getString("Sell-Success")));
                 new PurchaseSellMenu(MenuManager.getPlayerMenuUtility(pmu.getOwner())).open();
             }else{
                 pmu.getOwner().sendMessage(MessageUtils.message("Transaction failed."));
             }
 
         }else{
-            pmu.getOwner().sendMessage(MessageUtils.message("Not enough items in inventory."));
+            pmu.getOwner().sendMessage(MessageUtils.message(config.getString("Not-Enough-Items")));
         }
 
     }
@@ -130,7 +134,7 @@ public class PurchaseSellMenu extends Menu {
     public void buy(int amount, int price) throws MenuManagerNotSetupException, MenuManagerException {
 
         if (amount > (pmu.getShopItem().getSold() - pmu.getShopItem().getPurchased())) {
-            pmu.getOwner().sendMessage(MessageUtils.message("Not enough items in stock."));
+            pmu.getOwner().sendMessage(MessageUtils.message(config.getString("Not-Enough-Stock")));
             return;
         }
 
@@ -144,18 +148,18 @@ public class PurchaseSellMenu extends Menu {
                 if (response.transactionSuccess()) {
                     pmu.getOwner().getInventory().addItem(item);
                     pmu.getShopItem().setPurchased(pmu.getShopItem().getPurchased() + amount);
-                    pmu.getOwner().sendMessage(MessageUtils.message("Successfully bought the items."));
+                    pmu.getOwner().sendMessage(MessageUtils.message(config.getString("Buy-Success")));
                     new PurchaseSellMenu(MenuManager.getPlayerMenuUtility(pmu.getOwner())).open();
                 }else{
                     pmu.getOwner().sendMessage(MessageUtils.message("Transaction failed."));
                 }
 
             }else{
-                pmu.getOwner().sendMessage(MessageUtils.message("Not enough space in inventory."));
+                pmu.getOwner().sendMessage(MessageUtils.message(config.getString("Not-Enough-Space")));
             }
 
         }else{
-            pmu.getOwner().sendMessage(MessageUtils.message("You don't have enough balance."));
+            pmu.getOwner().sendMessage(MessageUtils.message(config.getString("Not-Enough-Balance")));
         }
 
     }

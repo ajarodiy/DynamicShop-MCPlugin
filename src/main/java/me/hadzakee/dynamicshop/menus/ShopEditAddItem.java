@@ -3,7 +3,7 @@ package me.hadzakee.dynamicshop.menus;
 import me.hadzakee.dynamicshop.menu.*;
 import me.hadzakee.dynamicshop.models.ShopItem;
 import me.hadzakee.dynamicshop.models.ShopItemsList;
-import me.kodysimpson.simpapi.colors.ColorTranslator;
+import me.hadzakee.dynamicshop.utils.ColorTranslator;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -56,7 +56,8 @@ public class ShopEditAddItem extends Menu {
             item.setSlot(pmu.getSlot());
             item.setPage(pmu.getPage());
             item.setMaterial(e.getCursor().getType().name());
-            item.setPrice(0);
+            item.setSellPrice(0);
+            item.setBuyPrice(0);
             item.setPurchased(0);
             item.setSold(0);
             ShopItemsList.getItems().add(item);

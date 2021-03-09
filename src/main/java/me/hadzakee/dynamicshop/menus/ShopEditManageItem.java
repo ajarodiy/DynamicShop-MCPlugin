@@ -4,8 +4,8 @@ import me.hadzakee.dynamicshop.DynamicShop;
 import me.hadzakee.dynamicshop.menu.*;
 import me.hadzakee.dynamicshop.models.ShopItemsList;
 import me.hadzakee.dynamicshop.utils.MessageUtils;
+import me.hadzakee.dynamicshop.utils.ColorTranslator;
 
-import me.kodysimpson.simpapi.colors.ColorTranslator;
 import org.bukkit.Material;
 import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.ConversationFactory;
@@ -52,7 +52,11 @@ public class ShopEditManageItem extends Menu {
         switch (e.getCurrentItem().getType()) {
             case BLUE_DYE:
                 pmu.getOwner().closeInventory();
-                startConversation();
+                startSellConversation();
+                break;
+            case GREEN_DYE:
+                pmu.getOwner().closeInventory();
+                startBuyConversation();
                 break;
             case RED_DYE:
                 ShopItemsList.removeItem(pmu.getPage(), pmu.getSlot());
@@ -69,16 +73,18 @@ public class ShopEditManageItem extends Menu {
     public void setMenuItems() {
         inventory.setItem(0, pmu.getItem());
 
-        ItemStack change = makeItem(Material.BLUE_DYE,  ColorTranslator.translateColorCodes("&#4ced28&lChange Price"));
+        ItemStack changeSell = makeItem(Material.BLUE_DYE,  ColorTranslator.translateColorCodes("&#4ced28&lChange Sell Price"));
+        ItemStack changeBuy = makeItem(Material.GREEN_DYE,  ColorTranslator.translateColorCodes("&#4ced28&lChange Buy Price"));
         ItemStack delete = makeItem(Material.RED_DYE, ColorTranslator.translateColorCodes("&#7244cf&lDelete Item"));
         ItemStack back = makeItem(Material.BARRIER,  ColorTranslator.translateColorCodes("&#f0300e&lBack"));
 
-        inventory.setItem(6,change);
+        inventory.setItem(5,changeSell);
+        inventory.setItem(6, changeBuy);
         inventory.setItem(7, delete);
         inventory.setItem(8, back);
     }
 
-    public void startConversation() {
+    public void startSellConversation() {
         Prompt enterAmount = new ValidatingPrompt() {
             @Override
             protected boolean isInputValid(ConversationContext context, String s) {
@@ -95,8 +101,53 @@ public class ShopEditManageItem extends Menu {
                 if (s.equalsIgnoreCase("cancel")) {
                     pmu.getOwner().sendMessage(MessageUtils.message("Price change has been cancelled"));
                 }else {
-                    ShopItemsList.changePrice(pmu.getPage(), pmu.getSlot(), Integer.parseInt(s));
-                    pmu.getOwner().sendMessage(MessageUtils.message("Price has been changed successfully"));
+                    ShopItemsList.changeSellPrice(pmu.getPage(), pmu.getSlot(), Integer.parseInt(s));
+                    pmu.getOwner().sendMessage(MessageUtils.message("Sell Price has been changed successfully"));
+                }
+                try {
+                    new ShopEditMenu(MenuManager.getPlayerMenuUtility(pmu.getOwner()), pmu.getPage()).open();
+                } catch (MenuManagerNotSetupException | MenuManagerException e) {
+                    e.printStackTrace();
+                }
+
+                return Prompt.END_OF_CONVERSATION;
+            }
+
+            @Override
+            public String getPromptText(ConversationContext context) {
+                return MessageUtils.message("Enter the new price (Type \"cancel\" to cancel)");
+            }
+        };
+
+
+        new ConversationFactory(DynamicShop.getInstance())
+                .withModality(false)
+                .withTimeout(15)
+                .withFirstPrompt(enterAmount)
+                .buildConversation(pmu.getOwner())
+                .begin();
+
+    }
+
+    public void startBuyConversation() {
+        Prompt enterAmount = new ValidatingPrompt() {
+            @Override
+            protected boolean isInputValid(ConversationContext context, String s) {
+                try { Integer.parseInt(s); return true; }
+                catch (NumberFormatException exception) {
+                    if (s.equalsIgnoreCase("cancel")) return true;
+                    pmu.getOwner().sendMessage(MessageUtils.message("Please enter a valid amount"));
+                    return false;
+                }
+            }
+
+            @Override
+            protected Prompt acceptValidatedInput(ConversationContext context, String s) {
+                if (s.equalsIgnoreCase("cancel")) {
+                    pmu.getOwner().sendMessage(MessageUtils.message("Price change has been cancelled"));
+                }else {
+                    ShopItemsList.changeBuyPrice(pmu.getPage(), pmu.getSlot(), Integer.parseInt(s));
+                    pmu.getOwner().sendMessage(MessageUtils.message("Buy Price has been changed successfully"));
                 }
                 try {
                     new ShopEditMenu(MenuManager.getPlayerMenuUtility(pmu.getOwner()), pmu.getPage()).open();

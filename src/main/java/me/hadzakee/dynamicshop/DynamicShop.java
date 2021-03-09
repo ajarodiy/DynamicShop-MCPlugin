@@ -13,6 +13,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.Optional;
 import java.util.logging.Logger;
 
 public final class DynamicShop extends JavaPlugin {
@@ -31,6 +32,9 @@ public final class DynamicShop extends JavaPlugin {
             return;
         }
 
+        getConfig().options().copyDefaults();
+        saveDefaultConfig();
+
         url = "jdbc:h2:" + getDataFolder().getAbsolutePath() + "/data/ShopItems";
         plugin = this;
         Database.initializeDatabase();
@@ -39,9 +43,12 @@ public final class DynamicShop extends JavaPlugin {
 
         MenuManager.setup(getServer(), this, PlayerMenuUtility.class);
 
+        MessageUtils.setPrefix(getConfig().getString("Prefix"));
+        MessageUtils.setMessagecolor(getConfig().getString("Message-Color"));
+
         fillList();
 
-        new FillDatabaseTask().runTaskTimerAsynchronously(this, 20*10, 20*10);
+        new FillDatabaseTask().runTaskTimerAsynchronously(this, 20, 20*10);
     }
 
     @Override

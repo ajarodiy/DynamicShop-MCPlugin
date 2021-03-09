@@ -27,7 +27,7 @@ public class Database {
     public static void initializeDatabase() {
         try {
             Statement statement = getConnection().createStatement();
-            statement.execute("CREATE TABLE IF NOT EXISTS ShopItems(Page int, Slot int, Material varchar(255), Purchased int DEFAULT 0, Sold int DEFAULT 0, Price DECIMAL(30,3));");
+            statement.execute("CREATE TABLE IF NOT EXISTS ShopItems(Page int, Slot int, Material varchar(255), Purchased int DEFAULT 0, Sold int DEFAULT 0, SellPrice DECIMAL(30,3), BuyPrice DECIMAL(30,3));");
             System.out.println("Database loaded successfully");
             statement.close();
 
@@ -41,13 +41,14 @@ public class Database {
     public static void addShopItem(ShopItem item) {
         try {
             PreparedStatement statement = getConnection()
-                    .prepareStatement("INSERT INTO ShopItems(Page, Slot, Material, Purchased, Sold, Price) VALUES(?, ?, ?, ?, ?, ?);");
+                    .prepareStatement("INSERT INTO ShopItems(Page, Slot, Material, Purchased, Sold, SellPrice, BuyPrice) VALUES(?, ?, ?, ?, ?, ?, ?);");
             statement.setInt(1, item.getPage());
             statement.setInt(2, item.getSlot());
             statement.setString(3, item.getMaterial());
             statement.setInt(4, item.getPurchased());
             statement.setInt(5, item.getSold());
-            statement.setInt(6, item.getPrice());
+            statement.setInt(6, item.getSellPrice());
+            statement.setInt(7, item.getBuyPrice());
 //            System.out.println(item.getPrice());
             statement.execute();
         } catch (SQLException throwables) {
@@ -58,7 +59,7 @@ public class Database {
     public static ShopItem getShopItem(ShopItem item) {
         try {
             PreparedStatement statement = getConnection()
-                    .prepareStatement("SELECT Purchased, Sold, Price FROM ShopItems WHERE Page = ?, Slot = ?;");
+                    .prepareStatement("SELECT Purchased, Sold, SellPrice, BuyPrice FROM ShopItems WHERE Page = ?, Slot = ?;");
             statement.setInt(1, item.getPage());
             statement.setInt(2, item.getSlot());
 
@@ -66,7 +67,8 @@ public class Database {
             result.next();
             item.setPurchased(result.getInt(1));
             item.setSold(result.getInt(2));
-            item.setPrice(result.getInt(3));
+            item.setSellPrice(result.getInt(3));
+            item.setBuyPrice(result.getInt(4));
 
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -90,7 +92,8 @@ public class Database {
                 item.setMaterial(result.getString(3));
                 item.setPurchased(result.getInt(4));
                 item.setSold(result.getInt(5));
-                item.setPrice(result.getInt(6));
+                item.setSellPrice(result.getInt(6));
+                item.setBuyPrice(result.getInt(7));
                 items.add(item);
             }
 

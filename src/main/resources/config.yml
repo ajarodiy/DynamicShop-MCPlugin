@@ -1,0 +1,12 @@
+# ----------------------------< MESSAGES >------------------------------ #
+Prefix: "&#33b1bd&l[&#33bdb4&lDynamicShop&#33b1bd&l]"
+Message-Color: "&#1de02a"
+
+# Any colors used in the messages below will overwrite the Message-Color above
+Sell-Success: "Successfully sold the items."
+Not-Enough-Items: "Not enough items in inventory."
+
+Buy-Success: "Successfully bought the items."
+Not-Enough-Stock: "Not enough items in stock."
+Not-Enough-Balance: "You don't have enough balance."
+Not-Enough-Space: "Not enough space in inventory."

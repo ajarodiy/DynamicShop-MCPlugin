@@ -1,11 +1,17 @@
 package me.hadzakee.dynamicshop.utils;
 
-import me.kodysimpson.simpapi.colors.ColorTranslator;
-
 public class MessageUtils {
 
-    private static String prefix = "&#33b1bd&l[&#33bdb4&lDynamicShop&#33b1bd&l]";
-    private static String messagecolor = "&#1de02a";
+    private static String prefix;
+    private static String messagecolor;
+
+    public static void setPrefix(String prefix) {
+        MessageUtils.prefix = prefix;
+    }
+
+    public static void setMessagecolor(String messagecolor) {
+        MessageUtils.messagecolor = messagecolor;
+    }
 
     public static String message(String message) {
         return ColorTranslator.translateColorCodes(prefix + " " + messagecolor + message);

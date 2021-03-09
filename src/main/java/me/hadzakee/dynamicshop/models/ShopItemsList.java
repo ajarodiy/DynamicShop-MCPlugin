@@ -23,8 +23,12 @@ public class ShopItemsList {
         items.stream().filter(item -> item.getPage()==page && item.getSlot()==slot).collect(Collectors.toList()).forEach(item -> items.remove(item));
     }
 
-    public static void changePrice(int page, int slot, int price) {
-        items.stream().filter(item -> item.getPage()==page && item.getSlot()==slot).collect(Collectors.toList()).forEach(item -> item.setPrice(price));
+    public static void changeSellPrice(int page, int slot, int price) {
+        items.stream().filter(item -> item.getPage()==page && item.getSlot()==slot).collect(Collectors.toList()).forEach(item -> item.setSellPrice(price));
+    }
+
+    public static void changeBuyPrice(int page, int slot, int price) {
+        items.stream().filter(item -> item.getPage()==page && item.getSlot()==slot).collect(Collectors.toList()).forEach(item -> item.setBuyPrice(price));
     }
 
     public static ShopItem getItem(int page, int slot) {

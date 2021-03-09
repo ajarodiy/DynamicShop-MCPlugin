@@ -4,15 +4,17 @@ public class ShopItem {
     private int page;
     private int slot;
     private String material;
-    private int price;
+    private int sellPrice;
     private int purchased = 0;
     private int sold = 0;
+    private int buyPrice;
 
-    public ShopItem(int page, int slot, String material, int price, int purchased, int sold) {
+    public ShopItem(int page, int slot, String material, int sellPrice, int buyPrice, int purchased, int sold) {
         this.page = page;
         this.slot = slot;
         this.material = material;
-        this.price = price;
+        this.sellPrice = sellPrice;
+        this.buyPrice = buyPrice;
         this.purchased = purchased;
         this.sold = sold;
     }
@@ -21,7 +23,7 @@ public class ShopItem {
         this.page = 0;
         this.slot = 0;
         this.material = null;
-        this.price = 0;
+        this.sellPrice = 0;
     }
 
     public int getPage() {
@@ -48,12 +50,12 @@ public class ShopItem {
         this.material = material;
     }
 
-    public int getPrice() {
-        return price;
+    public int getSellPrice() {
+        return sellPrice;
     }
 
-    public void setPrice(int price) {
-        this.price = price;
+    public void setSellPrice(int sellPrice) {
+        this.sellPrice = sellPrice;
     }
 
     public int getPurchased() {
@@ -72,10 +74,28 @@ public class ShopItem {
         this.sold = sold;
     }
 
-    public int getCurrentPrice() {
-        int stock = sold - purchased;
-        return price + stock/100;
+    public int getBuyPrice() {
+        return buyPrice;
     }
+
+    public void setBuyPrice(int buyPrice) {
+        this.buyPrice = buyPrice;
+    }
+
+    public int getCurrentSellPrice() {
+        int stock = getStock();
+        return sellPrice - stock/100;
+    }
+
+    public int getCurrentBuyPrice() {
+        int stock = getStock();
+        return buyPrice - stock/100;
+    }
+
+//    public int getCurrentPrice() {
+//        int stock = sold - purchased;
+//        return sellPrice - stock/100;
+//    }
 
     public int getStock() {
         return sold - purchased;
